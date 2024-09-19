@@ -6,7 +6,7 @@
 /*   By: jbaumfal <jbaumfal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 14:34:22 by jbaumfal          #+#    #+#             */
-/*   Updated: 2024/08/13 19:15:45 by jbaumfal         ###   ########.fr       */
+/*   Updated: 2024/09/18 22:57:46 by jbaumfal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,22 @@ char	*trim_mem(char *mem, int finder)
 
 	if (finder == -1 || finder == 0)
 	{
-		free (mem);
+		free(mem);
+		mem = NULL;
 		return (NULL);
 	}
 	if ((int)ft_strlen(mem) > finder)
-	{
 		new = ft_strdup(mem + finder);
-	}
 	else
 		new = ft_strdup("");
-	free(mem);
 	if (!new)
+	{
+		free(mem);
+		mem = NULL;
 		return (NULL);
+	}
+	free(mem);
+	mem = NULL;
 	return (new);
 }
 
@@ -55,6 +59,8 @@ int	fill_mem(int fd, int *finder, char **mem)
 		temp = ft_strjoin(*mem, buf);
 		if (!temp)
 			return (free(buf), -1);
+		if (*mem)
+			free(*mem);
 		*mem = temp;
 		*finder = ft_strchr_pos(*mem, '\n');
 	}
@@ -78,34 +84,39 @@ char	*fill_line(int finder, char **mem)
 		return (NULL);
 	*mem = trim_mem(*mem, finder);
 	if (!*mem)
-		return (NULL);
+		return (free(line), NULL);
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*mem[1024];
+	static char	*mem;
 	int			finder;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
-		if (mem[fd])
+		if (mem)
 		{
-			free (mem[fd]);
-			mem[fd] = NULL;
+			free (mem);
+			mem = NULL;
 		}
 		return (NULL);
 	}
-	if (!mem[fd])
-		mem[fd] = ft_strdup("");
-	if (!mem[fd])
+	if (!mem)
+		mem = ft_strdup("");
+	if (!mem)
 		return (NULL);
-	finder = ft_strchr_pos(mem[fd], '\n');
-	if (fill_mem(fd, &finder, &mem[fd]) == -1)
-		return (free_str(&mem[fd]));
-	if (ft_strlen(mem[fd]) == 0)
-		return (free_str(&mem[fd]));
-	return (fill_line(finder, &mem[fd]));
+	finder = ft_strchr_pos(mem, '\n');
+	if (fill_mem(fd, &finder, &mem) == -1)
+	{
+    	if (mem)
+       		free(mem);
+    	mem = NULL;
+    	return NULL;
+	}
+	if (ft_strlen(mem) == 0)
+		return (free_str(&mem));
+	return (fill_line(finder, &mem));
 }
 
 // int	main(void)

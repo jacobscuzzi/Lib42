@@ -6,7 +6,7 @@
 /*   By: jbaumfal <jbaumfal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 18:08:20 by jbaumfal          #+#    #+#             */
-/*   Updated: 2024/08/16 13:37:55 by jbaumfal         ###   ########.fr       */
+/*   Updated: 2024/08/18 13:56:13 by jbaumfal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@
 # include <stdio.h>
 # include <string.h>
 # include <limits.h>
+# include <fcntl.h>
 # include "ft_printf.h"
 # include "get_next_line.h"
+
 
 typedef struct s_list
 {
@@ -75,5 +77,7 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+
+int		ft_strchr_pos(const char *s, int c);
 
 #endif
